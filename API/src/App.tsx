@@ -78,6 +78,7 @@ function App() {
     },
   ];
   const [loading, setLoading] = useState(false);
+  const [filtered, setFiltered] = useState<DataType[]>([]);
 
   useEffect(() => {
     setLoading(true); // Bắt đầu loading
@@ -85,13 +86,18 @@ function App() {
       .then((res) => res.json())
       .then((list) => {
         setList(list.categories);
+        setFiltered(list.categories);
         setLoading(false); // Tắt loading khi fetch thành công
       })
       .catch(() => setLoading(false)); // Tắt loading khi lỗi
   }, []);
 
-
-  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+  const onSearch: SearchProps['onSearch'] = (value) => {
+    const filtered = list.filter((item) =>
+      item.strCategory?.toLowerCase().includes(value.toLowerCase())
+    );
+    setFiltered(filtered); // Cập nhật danh sách hiển thị
+  };
   return (
     <div className="w-full py-10">
       <div className="flex justify-evenly items-center mb-4">
@@ -107,7 +113,7 @@ function App() {
           Thêm
         </Button>
       </div>
-      <Table<DataType> columns={columns} dataSource={list} loading={loading} />
+      <Table<DataType> columns={columns} dataSource={filtered} loading={loading} />
       <Modal
         open={open}
         title="Thêm sản phẩm"
