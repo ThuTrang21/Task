@@ -8,7 +8,7 @@ import { DataType } from "./component/types";
 import { Input } from 'antd';
 import { SearchProps } from "antd/es/input";
 
-const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+
 
 const { Search } = Input;
 
@@ -77,14 +77,21 @@ function App() {
       width: 200,
     },
   ];
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true); // Bắt đầu loading
     fetch(`https://www.themealdb.com/api/json/v1/1/categories.php`)
       .then((res) => res.json())
       .then((list) => {
         setList(list.categories);
-      });
+        setLoading(false); // Tắt loading khi fetch thành công
+      })
+      .catch(() => setLoading(false)); // Tắt loading khi lỗi
   }, []);
+
+
+  const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
   return (
     <div className="w-full py-10">
       <div className="flex justify-evenly items-center mb-4">
@@ -100,7 +107,7 @@ function App() {
           Thêm
         </Button>
       </div>
-      <Table<DataType> columns={columns} dataSource={list} />
+      <Table<DataType> columns={columns} dataSource={list} loading={loading} />
       <Modal
         open={open}
         title="Thêm sản phẩm"
