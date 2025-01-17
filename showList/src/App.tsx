@@ -1,16 +1,13 @@
 import { useState } from "react";
 import "./App.css";
-import { Button, Modal, Space, Table, TableProps } from "antd";
+import { Button, Modal, Table, TableProps } from "antd";
 
 import { Input } from "antd";
 import { Field, Form, Formik } from "formik";
+import { ProductDetails } from "./component/ProductDetails";
+import { DataType } from "./component/types";
 
-interface DataType {
-  id: number;
-  name?: string;
-  price?: number;
-  image?: string;
-}
+
 
 const products: DataType[] = [
   {
@@ -36,48 +33,10 @@ const products: DataType[] = [
   },
 ];
 
-const columns: TableProps<DataType>["columns"] = [
-  {
-    title: "Hình ảnh",
-    dataIndex: "image",
-    key: "image",
-    render: (text: string) => (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <img src={text} alt="product" style={{ width: 50, height: 50 }} />
-      </div>
-    ),
-    align: "center",
-  },
-  {
-    title: "Tên bánh",
-    dataIndex: "name",
-    key: "name",
-  },
-  {
-    title: "Giá",
-    dataIndex: "price",
-    key: "price",
-  },
-  {
-    title: "Hành động",
-    key: "action",
-    render: () => (
-      <Space size="middle">
-        <a>Sửa</a>
-        <a>Xóa</a>
-      </Space>
-    ),
-  },
-];
 function App() {
   const [open, setOpen] = useState(false);
   const [list, setList] = useState(products);
+  const [selectedProduct, setSelectedProduct] = useState<DataType | null>(null); 
 
   const showModal = () => {
     setOpen(true);
@@ -88,8 +47,57 @@ function App() {
   };
 
   const handleReset = (resetForm:any) => {
-resetForm();
+    resetForm();
   };
+
+  const handleView = (product:DataType) => {
+    setSelectedProduct(product);
+  }
+
+  const columns: TableProps<DataType>["columns"] = [
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (text: string) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img src={text} alt="product" style={{ width: 50, height: 50 }} />
+        </div>
+      ),
+      align: "center",
+      width: 250,
+    },
+    {
+      title: "Tên bánh",
+      dataIndex: "name",
+      key: "name",
+      width: 400,
+    },
+    {
+      title: "Giá",
+      dataIndex: "price",
+      key: "price",
+      width: 300,
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (product) => (
+        <div className="flex gap-2">
+          <Button onClick={() => handleView(product)}>Xem chi Tiết</Button>
+          <Button>Sửa</Button>
+          <Button>Xóa</Button>
+        </div>
+      ),
+      width: 200,
+    },
+  ];
 
   return (
     <div className="w-full py-10">
@@ -104,19 +112,18 @@ resetForm();
         open={open}
         title="Thêm sản phẩm"
         onCancel={handleClose}
-       footer={null}
+        footer={null}
       >
-      <Formik
+        <Formik
           initialValues={{ name: "", price: "", image: "" }}
-
           onSubmit={(values, { resetForm }) => {
             setList([...list, { ...values, id: list.length + 1, price: Number(values.price) }]);
             resetForm();
             setOpen(false);
           }}
         >
-        
-           {({resetForm})=> <Form>
+          {({ resetForm }) => (
+            <Form>
               <div className="mb-4">
                 <label>Hình ảnh</label>
                 <Field name="image">
@@ -138,13 +145,16 @@ resetForm();
                 </Field>
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="default" onClick={()=>handleReset(resetForm)}>Hoàn tác</Button>
+                <Button type="default" onClick={() => handleReset(resetForm)}>Hoàn tác</Button>
                 <Button type="primary" htmlType="submit">Thêm</Button>
               </div>
-            </Form>}
-
+            </Form>
+          )}
         </Formik>
       </Modal>
+      {selectedProduct && (
+        <ProductDetails product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      )}
     </div>
   );
 }
