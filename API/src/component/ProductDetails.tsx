@@ -1,34 +1,9 @@
-import { Modal } from "antd";
-import { DataType } from "./types";
-interface productProps {
-    product: DataType;
-    onClose: () => void;
+import React from 'react'
 
-}
-export const ProductDetails = ({product,onClose}:productProps) => {
+const ProductDetails = () => {
   return (
-    <div>
-      <Modal
-        open={true}
-        title={`Chi tiết sản phẩm: ${product.name}`}
-        onCancel={onClose}
-        footer={null}
-        width={450}
-      >
-        <div className="flex flex-col justify-center items-center gap-4 mt-10">
-          <p>
-            <strong>Tên sản phẩm:</strong> {product.name}
-          </p>
-          <p>
-            <strong>Giá:</strong> {product.price}
-          </p>
-          <img
-            src={product.image}
-            alt={product.name}
-            style={{ width: "50%" }}
-          />
-        </div>
-      </Modal>
-    </div>
-  );
-};
+    <div>ProductDetails</div>
+  )
+}
+
+export default ProductDetails
